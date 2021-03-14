@@ -4,19 +4,58 @@ async function getRecipeList() {
 
     try {
         const res = await fetch(url);
+        if (res.ok === false) {
+            throw new Error()
+        }
         const data = await res.json()
         main.innerHTML = ""
         Object.values(data).forEach(r => {
-            const result = e('article', { className: 'preview' },
-                e('div', { className: 'title' }, e('h2', {}, r.name)),
-                e('div', { className: 'small' }, e('img', { src: r.img }))
-            )
-            main.appendChild(result);
+            main.appendChild(createPreview(r));
         })
     } catch (error) {
         console.log(error);
     }
 }
+
+function createPreview(r) {
+    const result = e('article', { className: 'preview' },
+        e('div', { className: 'title' }, e('h2', {}, r.name)),
+        e('div', { className: 'small' }, e('img', { src: r.img }))
+    )
+
+    result.addEventListener('click', () => getRecipeDetails(r._id, result))
+
+    return result
+}
+
+async function getRecipeDetails(id, preview) {
+    let url = `http://localhost:3030/jsonstore/cookbook/details/${id}`;
+
+    const res = await fetch(url);
+    const recipe = await res.json();
+
+    const result = e('article', {},
+        e('h2', { onClick: toggleCard }, recipe.name),
+        e('div', { className: 'band' },
+            e('div', { className: 'thumb' }, e('img', { src: recipe.img })),
+            e('div', { className: 'ingredients' },
+                e('h3', {}, 'Ingredients:'),
+                e('ul', {}, recipe.ingredients.map(i => e('li', {}, i))),
+            )
+        ),
+        e('div', { className: 'description' },
+            e('h3', {}, 'Preparation:'),
+            recipe.steps.map(s => e('p', {}, s))
+        ),
+    );
+
+    preview.replaceWith(result);
+
+    function toggleCard() {
+
+        result.replaceWith(preview)
+    }
+};
 
 window.addEventListener('load', () => {
     getRecipeList()
