@@ -54,6 +54,13 @@ window.addEventListener('load', async () => {
 
     main.innerHTML = '';
     cards.forEach(c => main.appendChild(c));
+
+    if (sessionStorage.userToken != null) {
+        document.getElementById('user').style.display = 'inline-block'; 
+        document.getElementById('logoutBtn').addEventListener('click', logout)
+    }else {
+       document.getElementById('guest').style.display = 'inline-block';
+    }
 });
 
 function e(type, attributes, ...content) {
@@ -80,3 +87,21 @@ function e(type, attributes, ...content) {
 
     return result;
 }
+
+
+async function logout() {
+    const token = sessionStorage.getItem('userToken')
+    console.log(token);
+    const res = await fetch('http://localhost:3030/users/logout', {
+        method: 'get',
+        headers: {'X-Authorization': token}
+    });
+
+    if (res.ok == false) {
+        const data = await res.json()
+        return console.log(data.message);
+    }
+
+    sessionStorage.removeItem('userToken');
+    window.location.pathname = 'index.html'
+};
