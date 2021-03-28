@@ -1,4 +1,5 @@
-import { e } from './dom.js';
+import { e } from './dom.js'
+import { showDetails } from './details.js'
 export {
     setupCatalog,
     showCatolog
@@ -11,26 +12,13 @@ async function getRecipes() {
     return recipes;
 }
 
-async function getRecipeById(id) {
-    const response = await fetch('http://localhost:3030/data/recipes/' + id);
-    const recipe = await response.json();
-
-    return recipe;
-}
-
 function createRecipePreview(recipe) {
-    const result = e('article', { className: 'preview', onClick: toggleCard },
+    const result = e('article', { className: 'preview', onClick: () => showDetails(recipe._id) },
         e('div', { className: 'title' }, e('h2', {}, recipe.name)),
         e('div', { className: 'small' }, e('img', { src: recipe.img })),
     );
 
     return result;
-
-    async function toggleCard() {
-        const fullRecipe = await getRecipeById(recipe._id);
-
-        result.replaceWith(createRecipeCard(fullRecipe));
-    }
 }
 
 function createRecipeCard(recipe) {
@@ -54,16 +42,20 @@ function createRecipeCard(recipe) {
 
 let main;
 let section;
+let setActiveNav;
 
 setupCatalog(main, section)
 
-function setupCatalog(mainTarget, sectionTarget) {
+function setupCatalog(mainTarget, sectionTarget, setActiveNavCb) {
     main = mainTarget;
     section = sectionTarget;
+    setActiveNav = setActiveNavCb;
 
 }
 
 async function showCatolog() {
+    setActiveNav('catalogLink');
+
     section.innerHTML = '<p style="color: white">Loading...</p>';
     main.innerHTML = '';
     main.appendChild(section);
