@@ -1,7 +1,17 @@
-//@ts-check
 const { chromium } = require('playwright-chromium');
 const { expect } = require('chai');
+const mockData = require('./mock-data.json');
 
+function json(data) {
+    return {
+        status: 200,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }
+}
 
 let browser;
 let context;
@@ -36,4 +46,17 @@ describe('E2E tests', function () {
         await context.close();
     });
 
+    describe('Catalog', () => {
+        it('loads and displays recipes', async () => {
+            await page.route('**/data/recipes*', (request) => request.fulfill(json(mockData.list)));
+            await page.goto('http://localhost:3000');
+
+            await page.waitForSelector('article');
+
+            const titles = await page.$$eval('h2', titles => titles.map(t => t.textContent));
+            expect(titles[0]).to.contains('Easy Lasagna');
+            expect(titles[1]).to.contains('Grilled Duck Fillet');
+            expect(titles[2]).to.contains('Roast Trout');
+        })
+    });
 });
