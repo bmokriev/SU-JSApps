@@ -67,7 +67,7 @@ export async function login(email, password) {
 
     sessionStorage.setItem('email', result.email);
     sessionStorage.setItem('authToken', result.accessToken);
-    sessionStorage.setItem('id', result._id);
+    sessionStorage.setItem('userId', result._id);
 
     return result;
 }
@@ -77,7 +77,7 @@ export async function register(email, password) {
 
     sessionStorage.setItem('email', result.email);
     sessionStorage.setItem('authToken', result.accessToken);
-    sessionStorage.setItem('id', result._id);
+    sessionStorage.setItem('userId', result._id);
 
     return result;
 }
@@ -87,7 +87,7 @@ export async function logout(email, password) {
 
     sessionStorage.removeItem('email');
     sessionStorage.removeItem('authToken');
-    sessionStorage.removeItem('id');
+    sessionStorage.removeItem('userId');
 
     return result;
 }
