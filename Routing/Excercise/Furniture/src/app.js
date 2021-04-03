@@ -10,9 +10,6 @@ import { editPage } from './views/edit.js';
 import { loginPage } from './views/login.js';
 import { registerPage } from './views/register.js';
 
-import * as api from './api/data.js';
-window.api = api;
-
 const main = document.querySelector('.container');
 
 page('/', decorateContext, dashboardPage);
@@ -20,7 +17,7 @@ page('/dahboard', decorateContext, dashboardPage);
 page('/my-furniture', decorateContext, myPage);
 page('/details/:id', decorateContext, detailsPage);
 page('/create', decorateContext, createPage);
-page('/edit', decorateContext, editPage);
+page('/edit/:id', decorateContext, editPage);
 page('/register', decorateContext, registerPage);
 page('/login', decorateContext, loginPage);
 
