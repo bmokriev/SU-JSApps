@@ -1,6 +1,7 @@
 import page from '../node_modules/page/page.mjs';
 import { render } from '../node_modules/lit-html/lit-html.js'
 
+import { logout } from './api/data.js'
 import { dashboardPage } from './views/dashboard.js';
 import { myPage } from './views/myFurniture.js';
 import { detailsPage } from './views/details.js';
@@ -14,18 +15,40 @@ window.api = api;
 
 const main = document.querySelector('.container');
 
-page('/', renderMiddleware, dashboardPage);
-page('/dahboard', renderMiddleware, dashboardPage);
-page('/my-furniture', renderMiddleware, myPage);
-page('/details/:id', renderMiddleware, detailsPage);
-page('/create', renderMiddleware, createPage);
-page('/edit', renderMiddleware, editPage);
-page('/register', renderMiddleware, registerPage);
-page('/login', renderMiddleware, loginPage);
+page('/', decorateContext, dashboardPage);
+page('/dahboard', decorateContext, dashboardPage);
+page('/my-furniture', decorateContext, myPage);
+page('/details/:id', decorateContext, detailsPage);
+page('/create', decorateContext, createPage);
+page('/edit', decorateContext, editPage);
+page('/register', decorateContext, registerPage);
+page('/login', decorateContext, loginPage);
 
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await logout()
+    setUserNav()
+    page.redirect('/')
+})
+
+setUserNav()
+
+// start app
 page.start();
 
-function renderMiddleware(ctx, next) {
+
+function decorateContext(ctx, next) {
     ctx.render = (content) => render(content, main);
+    ctx.setUserNav = setUserNav;
     next();
+}
+
+function setUserNav() {
+    const userId = sessionStorage.getItem('userId');
+    if (userId != null) {
+        document.getElementById('user').style.display = 'inline-block';
+        document.getElementById('guest').style.display = 'none';
+    } else {
+        document.getElementById('user').style.display = 'none';
+        document.getElementById('guest').style.display = 'inline-block';
+    }
 }
