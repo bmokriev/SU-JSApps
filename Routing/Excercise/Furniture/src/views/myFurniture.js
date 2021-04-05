@@ -13,7 +13,6 @@ const myTemplate = (data) => html`<div class="row space-top">
 </div>`;
 
 export async function myPage(ctx) {
-
     const data = await getMyFurniture()
     ctx.render(myTemplate(data))
 }
